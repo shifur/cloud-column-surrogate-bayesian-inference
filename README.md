@@ -52,7 +52,7 @@ is a separate workflow with its own computational and external dependencies.
 SCCM is an external numerical-model dependency used to generate model
 outputs for the study. The repository contains study-owned interfaces,
 configuration, preprocessing and postprocessing, surrogate, MCMC, and
-analysis software. SCCM source code and binaries are outside the repository.
+analysis software. SCCM source code and binaries are not redistributed in this repository.
 For authorized external runs, set `SCCM_INSTALL_DIR` to the directory with
 `cloud_column_model.x`, `namelist_3h_t30-180.f90`, and `trp.dat`.
 Exact SCCM source, version, access, citation, and redistribution terms remain
@@ -85,9 +85,12 @@ the formal chain checksum-index digest.
 
 Cite the manuscript and the frozen software and data records once their
 citations are assigned. `CITATION.cff.template` records the unresolved
-software citation fields. Article DOI: NOT YET ASSIGNED.
+software citation fields. ARTICLE DOI: NOT YET ASSIGNED.
 
 ## License
 
-SOFTWARE LICENSE: AUTHOR DECISION REQUIRED.
-See `LICENSE_DECISION.md` for the author-review choices.
+SOFTWARE LICENSE: AUTHOR DECISION REQUIRED
+
+Software license: To be determined before the archival paper release.
+No license has been selected for this software. No license statement in
+this repository grants rights to SCCM or other third-party software.
