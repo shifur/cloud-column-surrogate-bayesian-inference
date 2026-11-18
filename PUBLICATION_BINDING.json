@@ -5,7 +5,7 @@
   "software_repository_url": "https://github.com/shifur/cloud-column-surrogate-bayesian-inference",
   "software_release_version": "AUTHOR DECISION REQUIRED",
   "software_doi": "NOT YET ASSIGNED",
-  "data_doi": "NOT YET ASSIGNED",
+  "data_doi": "10.5281/zenodo.24353341",
   "article_doi": "NOT YET ASSIGNED",
   "canonical_figure_hashes": {
     "Updated Figures/figure1.pdf": "16975babb60041e27ce6d0102dda2aa176a603791be4596a355c7fafb6552cd3",
@@ -20,5 +20,6 @@
   },
   "formal_chain_checksum_index_path": "formal_mcmc/SHA256SUMS",
   "formal_chain_checksum_index_sha256": "08b3e972853c767e940835595dfd75d57b35186f184fe6ad809b77980780a95e",
-  "software_data_relationship": "The software repository provides portable generators and analysis. The companion data record supplies archived scientific inputs, formal posterior chains and canonical figures. Pass the unpacked data record to the software redraw command with --archive."
+  "software_data_relationship": "The software repository provides portable generators and analysis. The companion data record supplies archived scientific inputs, formal posterior chains and canonical figures. Pass the unpacked data record to the software redraw command with --archive.",
+  "data_doi_status": "RESERVED_UNPUBLISHED"
 }
