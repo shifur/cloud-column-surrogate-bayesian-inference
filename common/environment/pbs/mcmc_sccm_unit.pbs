@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#PBS -N cloud_sccm
+#PBS -l select=1:ncpus=128:mpiprocs=1
+#PBS -l walltime=12:00:00
+#PBS -j oe
+
+set -euo pipefail
+: "${CASE:?set CASE to radiation_only or full_except_acc}"
+: "${ENSEMBLE:?set ENSEMBLE to 0 or 1}"
+cd "${PBS_O_WORKDIR}"
+conda run --no-capture-output -n cloud-column-study-derecho \
+  python -u scripts/mcmc.py --config configs/mcmc.toml run-unit \
+  --case "${CASE}" --method sccm --ensemble "${ENSEMBLE}" \
+  --sccm-workers 16 --progress-every 1000

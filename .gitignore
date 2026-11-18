@@ -1,0 +1,34 @@
+# Local environments and build/test outputs
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+build/
+dist/
+*.egg-info/
+
+# Local redraws, archives, and executable outputs
+/redraw/
+/validation/
+/data/
+/formal_mcmc/
+/figures/
+/outputs/
+/common/data/
+/common/outputs/
+/common/figures/
+/common/vendor/sccm/
+*.nc
+*.npz
+*.npy
+*.pt
+*.o
+*.a
+*.mod
+*.x
+*.log
+*~
+*.bak
+.env

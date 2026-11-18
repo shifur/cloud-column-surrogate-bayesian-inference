@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/cloud-column-study-optimized/run_manifest.schema.json",
+  "title": "Cloud Column Reproduction Artifact Manifest",
+  "type": "object",
+  "required": [
+    "manifest_schema_version",
+    "run_id",
+    "created_utc",
+    "status",
+    "command",
+    "git",
+    "scientific_source_snapshot",
+    "environment",
+    "artifact"
+  ],
+  "properties": {
+    "manifest_schema_version": {"const": 2},
+    "run_id": {"type": "string", "format": "uuid"},
+    "created_utc": {"type": "string", "format": "date-time"},
+    "status": {"const": "complete"},
+    "artifact": {"type": "string", "minLength": 1},
+    "command": {
+      "type": "object",
+      "required": ["argv", "cwd"],
+      "properties": {
+        "argv": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "cwd": {"type": "string", "minLength": 1}
+      }
+    },
+    "git": {
+      "type": "object",
+      "required": [
+        "revision",
+        "branch",
+        "has_commits",
+        "dirty",
+        "status_entry_count",
+        "status_porcelain_sha256"
+      ]
+    },
+    "scientific_source_snapshot": {
+      "type": "object",
+      "required": ["algorithm", "roots", "file_count", "sha256"]
+    },
+    "environment": {
+      "type": "object",
+      "required": [
+        "specification",
+        "specification_sha256",
+        "python",
+        "conda_environment",
+        "platform",
+        "packages",
+        "runtime_controls",
+        "tools"
+      ]
+    },
+    "approved_runtime": {
+      "type": "object",
+      "required": [
+        "status",
+        "environment_name",
+        "interpreter_prefix",
+        "interpreter_executable",
+        "specification_sha256",
+        "environment_fingerprint_sha256"
+      ],
+      "properties": {
+        "status": {"const": "approved"},
+        "environment_name": {"const": "cloud-column-study-derecho"},
+        "interpreter_prefix": {"type": "string", "minLength": 1},
+        "interpreter_executable": {"type": "string", "minLength": 1},
+        "specification_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "environment_fingerprint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      },
+      "additionalProperties": true
+    },
+    "pdr_basis": {
+      "type": "object",
+      "required": [
+        "index_set",
+        "order",
+        "dimension",
+        "multi_index_count",
+        "multi_index_shape",
+        "multi_index_dtype",
+        "fingerprint_algorithm",
+        "fingerprint_sha256"
+      ],
+      "properties": {
+        "index_set": {"const": "hyperbolic-cross"},
+        "order": {"const": 23},
+        "dimension": {"const": 11},
+        "multi_index_count": {"const": 7569},
+        "multi_index_shape": {
+          "type": "array",
+          "prefixItems": [{"const": 7569}, {"const": 11}],
+          "items": false
+        },
+        "multi_index_dtype": {"const": "little-endian-int64"},
+        "fingerprint_algorithm": {
+          "const": "sha256(canonical-json-metadata-newline-little-endian-int64-c-order-bytes)"
+        },
+        "fingerprint_sha256": {
+          "const": "a22d9594d73d3b779dc08d87dc34470ef8d2a5fcb2c60e786acc8429c3eed76f"
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "artifact": {"const": "mcmc-surrogate-data"},
+          "artifact_role": {"const": "production"}
+        },
+        "required": ["artifact", "artifact_role"]
+      },
+      "then": {
+        "required": [
+          "rng_algorithm",
+          "sampling_policy",
+          "sccm_success_count",
+          "sccm_failure_count",
+          "non_finite_count",
+          "approved_runtime"
+        ],
+        "properties": {
+          "rng_algorithm": {"const": "numpy.random.Generator(PCG64)"},
+          "sampling_policy": {"const": "numpy-pcg64-independent-uniform-physical-box"},
+          "sccm_success_count": {"const": 5000},
+          "sccm_failure_count": {"const": 0},
+          "non_finite_count": {"const": 0}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"artifact": {"const": "mcmc-surrogate-fit"}},
+        "required": ["artifact"]
+      },
+      "then": {"required": ["pdr_basis"]}
+    },
+    {
+      "if": {
+        "properties": {"artifact": {"const": "mcmc-cluster-aware-diagnostics"}},
+        "required": ["artifact"]
+      },
+      "then": {
+        "required": ["data_sha256", "config_sha256", "chain_sha256", "array_construction", "rhat_threshold_strictly_less_than", "bulk_ess_threshold", "tail_ess_threshold", "cross_walker_dependence_is_pass_fail", "pass"],
+        "properties": {
+          "rhat_threshold_strictly_less_than": {"const": 1.01},
+          "bulk_ess_threshold": {"const": 400},
+          "tail_ess_threshold": {"const": 400},
+          "cross_walker_dependence_is_pass_fail": {"const": false}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"artifact": {"const": "mcmc-independent-ensemble-prefix-diagnostics"}},
+        "required": ["artifact"]
+      },
+      "then": {
+        "required": ["data_sha256", "config_sha256", "source_checkpoint_sha256", "source_block_sha256", "initialization_seeds", "chain_axis_source", "walker_split_rhat_forbidden", "rhat_threshold_strictly_less_than", "bulk_ess_threshold", "tail_ess_threshold", "maximum_quantile_bin_occupancy_difference_threshold", "pass"],
+        "properties": {
+          "chain_axis_source": {"const": "independently-initialized-emcee-ensemble"},
+          "walker_split_rhat_forbidden": {"const": true},
+          "rhat_threshold_strictly_less_than": {"const": 1.01},
+          "bulk_ess_threshold": {"const": 400},
+          "tail_ess_threshold": {"const": 400},
+          "maximum_quantile_bin_occupancy_difference_threshold": {"const": 0.10}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {"artifact": {"const": "mcmc-chain"}, "method": {"const": "sccm"}},
+        "required": ["artifact", "method"]
+      },
+      "then": {
+        "required": ["chain_sha256", "prediction_cache_present", "prediction_cache_array_sha256", "prediction_cache_binding"],
+        "properties": {"prediction_cache_present": {"const": true}}
+      }
+    }
+  ],
+  "additionalProperties": true
+}

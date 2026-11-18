@@ -1,0 +1,8 @@
+schema_version = 1
+id = "cloud_column_11d_broad_v1"
+description = "Authoritative physical parameter box for controlled reproduction runs"
+names = ["as", "bs", "ag", "bg", "N0r", "N0s", "N0g", "rhos", "rhog", "qc0", "qi0"]
+lower = [50.0, 0.10, 50.0, 0.10, 0.05, 0.05, 0.05, 0.05, 0.05, 1.0e-4, 2.0e-6]
+upper = [1000.0, 1.0, 1200.0, 0.90, 5.0, 2.5, 2.5, 1.0, 1.0, 2.0e-3, 1.0e-3]
+sampling_measure = "independent-uniform"
+

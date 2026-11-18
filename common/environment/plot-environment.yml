@@ -1,0 +1,17 @@
+name: cloud-column-plot
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy=2.4.3
+  - scipy=1.17.1
+  - matplotlib-base=3.10.8
+  - h5py=3.16.0
+  - h5netcdf=1.8.1
+  - xarray=2026.7.0
+  - arviz=0.23.4
+  # CPU-only dependencies for the shipped scientific unit tests.
+  - pytest=9.1.1
+  - emcee=3.1.6
+  - pytorch=2.5.1=cpu*
+  - scikit-learn=1.8.0

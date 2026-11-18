@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cloud-column-study-optimized"
+version = "0.1.0"
+description = "Optimized production pipeline for the cloud-column surrogate and MCMC study"
+requires-python = ">=3.11"
+
+[tool.setuptools]
+package-dir = {"" = "common/src"}
+
+[tool.setuptools.packages.find]
+where = ["common/src"]

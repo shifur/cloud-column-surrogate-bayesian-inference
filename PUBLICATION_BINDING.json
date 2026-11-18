@@ -1,0 +1,24 @@
+{
+  "manuscript_title": "Sparse Polynomial and Neural Network Surrogates for Bayesian Cloud Microphysics Inference",
+  "manuscript_source_version": "v4",
+  "manuscript_v4_sha256": "3ae089c87b935a19e3a4c37fcc2aaffb34c27043347cb12f039d64ac8da3c12d",
+  "software_repository_url": "https://github.com/shifur/cloud-column-surrogate-bayesian-inference",
+  "software_release_version": "AUTHOR DECISION REQUIRED",
+  "software_doi": "NOT YET ASSIGNED",
+  "data_doi": "NOT YET ASSIGNED",
+  "article_doi": "NOT YET ASSIGNED",
+  "canonical_figure_hashes": {
+    "Updated Figures/figure1.pdf": "16975babb60041e27ce6d0102dda2aa176a603791be4596a355c7fafb6552cd3",
+    "Updated Figures/figure2_cs_degree_resolved_4d.pdf": "df5f31a20c7f82d87f19797ef6c1debd81ec30c471fa2a75c9450c690ec183c4",
+    "Updated Figures/sensitivity_comparison_1D_CRM_CS_DNN_manuscript.pdf": "6c81fed0b44d61e2e9325e7881bc3575550eab565ab70bb0c0d02d07bd3e17f0",
+    "Updated Figures/figure4_training_cost_derecho_final.pdf": "3b2d16e04c8961d0d144136498ed628a7a4b5ee193a2d71e784bb1771fee08fd",
+    "Updated Figures/figure5_mcmc_timing.pdf": "65c2405e99a985723cafb7b11eaaa283fba0dd606053ae8bf754f1fb242c7e4c",
+    "Updated Figures/figure6_posterior_energy_distance.pdf": "a5c4b5f39b93926c2b011fbd96772d0af0fcdc4093b65b96eaf4d782cce6cce6",
+    "Updated Figures/figure7_corner_full_except_acc_smooth_contour.pdf": "e81977a173319d407668ba5b8e92bb798d9556164b2a8d1c75cf311d51a59837",
+    "Updated Figures/appendixB_relative_l2_vs_energy_distance_two_panel_manuscript_style.pdf": "f7c53ddb61fad2576157d1901862fb44623541af8d098ae502b1bc939806ed9b",
+    "Updated Figures/appendix_convergence_full_except_acc.pdf": "a179005d08939fa83a96f40ac4b57c4817f49a4b3f17c54a3da270a50eb4f753"
+  },
+  "formal_chain_checksum_index_path": "formal_mcmc/SHA256SUMS",
+  "formal_chain_checksum_index_sha256": "08b3e972853c767e940835595dfd75d57b35186f184fe6ad809b77980780a95e",
+  "software_data_relationship": "The software repository provides portable generators and analysis. The companion data record supplies archived scientific inputs, formal posterior chains and canonical figures. Pass the unpacked data record to the software redraw command with --archive."
+}

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#PBS -N cloud_study_gpu
+#PBS -l select=1:ncpus=16:ngpus=1
+#PBS -l walltime=12:00:00
+#PBS -j oe
+
+set -euo pipefail
+
+module --force purge
+module load ncarenv/24.12
+module load gcc/12.4.0
+module load cuda/12.3.2
+module load conda/latest
+module list
+
+export TMPDIR="${CLOUD_COLUMN_JOB_TMPDIR:-${TMPDIR:-/tmp}/cloud-column-study/${PBS_JOBID:-manual}}"
+export PIP_CACHE_DIR="${WORK}/pip-cache"
+export CUBLAS_WORKSPACE_CONFIG=:4096:8
+mkdir -p "${TMPDIR}" "${PIP_CACHE_DIR}"
+
+: "${STAGE:?STAGE is required}"
+cd "${PBS_O_WORKDIR}"
+arguments=(python -u scripts/run_study.py run-stage --stage "${STAGE}")
+if [[ -n "${PBS_ARRAY_INDEX:-}" ]]; then
+  arguments+=(--index "${PBS_ARRAY_INDEX}")
+fi
+conda run --no-capture-output -n cloud-column-study-derecho "${arguments[@]}"

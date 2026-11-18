@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+#PBS -N cloud_candidate_gpu4
+#PBS -l select=1:ncpus=64:ngpus=4
+#PBS -l walltime=12:00:00
+#PBS -j oe
+
+set -euo pipefail
+
+module --force purge
+module load ncarenv/24.12
+module load gcc/12.4.0
+module load cuda/12.3.2
+module load conda/latest
+module list
+
+export TMPDIR="${CLOUD_COLUMN_JOB_TMPDIR:-${TMPDIR:-/tmp}/cloud-column-study/${PBS_JOBID:-manual}}"
+export PIP_CACHE_DIR="${WORK}/pip-cache"
+export CUBLAS_WORKSPACE_CONFIG=:4096:8
+mkdir -p "${TMPDIR}" "${PIP_CACHE_DIR}"
+
+: "${STAGE:?STAGE is required}"
+: "${PBS_ARRAY_INDEX:?PBS_ARRAY_INDEX is required}"
+
+cd "${PBS_O_WORKDIR}"
+
+base_trial=$((PBS_ARRAY_INDEX * 4))
+pids=()
+
+for local_gpu in 0 1 2 3; do
+    trial=$((base_trial + local_gpu))
+    echo "CANDIDATE_TRIAL_START trial=${trial} physical_gpu=${local_gpu}"
+    trial_tmp="${TMPDIR}/candidate_trial_${trial}"
+    mkdir -p "${trial_tmp}"
+    TMPDIR="${trial_tmp}" CUDA_VISIBLE_DEVICES="${local_gpu}" \
+      conda run --no-capture-output -n cloud-column-study-derecho \
+      python -u scripts/run_study.py run-stage \
+      --stage "${STAGE}" --index "${trial}" &
+    pids+=("$!")
+done
+
+status=0
+for pid in "${pids[@]}"; do
+    if ! wait "${pid}"; then
+        status=1
+    fi
+done
+
+if (( status != 0 )); then
+    echo "One or more candidate MCMC trial processes failed" >&2
+    exit 1
+fi
+
+echo "CANDIDATE_GPU4_COMPLETE array_index=${PBS_ARRAY_INDEX}"

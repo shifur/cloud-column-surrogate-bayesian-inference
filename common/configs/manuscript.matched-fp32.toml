@@ -1,0 +1,27 @@
+schema_version = 1
+status = "production-finalization-v1"
+mcmc_config = "configs/mcmc.matched-fp32.toml"
+figure1_output = "outputs/figure1/production_v1"
+chain_root = "outputs/mcmc/matched_fp32_v2/chains"
+figure_directory = "figures/matched_fp32_v2"
+table_directory = "outputs/mcmc/matched_fp32_v2/tables"
+primary_likelihood_case = "full_except_acc"
+secondary_likelihood_case = "radiation_only"
+
+[energy_distance]
+coordinate_system = "prior-normalized"
+source_transitions_per_ensemble = 256
+subsample_size = 1024
+replications = 10
+seeds = [73001, 73002, 73003, 73004, 73005, 73006, 73007, 73008, 73009, 73010]
+chunk_rows = 256
+
+[corner]
+parameter_names = ["as", "bs", "ag", "bg"]
+transitions_per_ensemble = 512
+seed = 74001
+bins_1d = 80
+bins_2d = 60
+
+[coefficient_structure]
+outputs = ["PCP", "OLR"]

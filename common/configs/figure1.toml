@@ -1,0 +1,120 @@
+schema_version = 1
+status = "controlled-rqmc-primary-v2-q23"
+
+[pipeline_invariants]
+shared_parameter_box = true
+reject_out_of_box_before_surrogate = true
+reject_out_of_box_mcmc_proposals_before_forward_model = true
+forbid_absolute_quadrature_weights = true
+
+[experiment]
+id = "figure1_rqmc_q23_v2"
+description = "Paired q=23 CS and DNN learning curves evaluated by replicated Owen-scrambled Sobol RQMC"
+base_seed = 1234
+trials = 20
+train_size_min = 100
+train_size_max = 5000
+train_size_step = 100
+nested_training_subsets = true
+outputs = ["PCP", "ACC", "LWP", "IWP", "OLR", "OSR"]
+
+[parameters]
+source = "parameter_box.toml"
+
+[validation]
+kind = "independent-uniform-monte-carlo"
+dimension = 11
+expected_points = 5000
+used_for_model_selection = true
+seed_stage = "figure1-validation"
+role = "dnn-checkpoint-selection-only"
+
+[evaluation]
+kind = "replicated-scrambled-sobol-rqmc"
+generator_package = "QMCPy"
+generator_version = "2.3"
+generator_class = "DigitalNetB2"
+dimension = 11
+replications = 10
+log2_points_per_replication = 14
+points_per_replication = 16384
+expected_points = 163840
+prefix_log2 = [10, 11, 12, 13, 14]
+randomization = "NUS"
+generating_matrices = "joe_kuo.6.21201.txt"
+order = "RADICAL INVERSE"
+bits = 63
+alpha = 1
+seed_stage = "figure1-rqmc-evaluation"
+used_for_model_selection = false
+metric = "replicated-rqmc-relative-l2"
+weight_policy = "equal-positive"
+metric_status = "primary-figure1-error-metric"
+confidence_level = 0.95
+uncertainty_method = "paired-delete-one-replicate-jackknife-student-t"
+
+[cs]
+formulation = "weighted-decoupled-square-root-lasso"
+polynomial_family = "orthonormal-legendre"
+index_set = "hyperbolic-cross"
+hyperbolic_cross_order = 23
+expected_basis_size = 7569
+index_set_selection_policy = "predeclared-smallest-hc-basis-strictly-above-max-m-not-rqmc-tuned"
+lambda_rule = "1/sqrt(25*m)"
+intrinsic_weights = true
+solver = "restarted-primal-dual"
+target_pd_iterations = 5000
+iteration_budget_policy = "ceil-full-restarts"
+restart_additive_tolerance = 1.0e-8
+restart_contraction = 0.36787944117144233
+dual_restart = "zero"
+restart_output = "ergodic-average"
+record_realized_iterations = true
+compute_dtype = "float32"
+spectral_norm_method = "power-iteration"
+spectral_norm_safety_factor = 1.01
+spectral_norm_seed = 8675309
+spectral_norm_power_iterations = 50
+spectral_norm_randomized_components = 1
+spectral_norm_randomized_oversamples = 10
+spectral_norm_randomized_power_iterations = 5
+spectral_norm_randomized_power_normalizer = "auto"
+
+[cs.offline_cache]
+enabled = true
+artifact_role = "regenerable-performance-cache-not-scientific-result"
+design_dtype = "float64"
+maximum_rows_per_trial = 5000
+reuse_nested_row_prefixes = true
+cache_configured_spectral_norms = true
+parallelization = "independent-trials"
+default_processes = 4
+blas_thread_policy = "detected-cpu-count-divided-by-processes"
+
+[dnn]
+hidden_layers = 8
+width = 50
+expected_trainable_parameters = 18756
+activation = "tanh"
+optimizer = "adam"
+learning_rate_initial = 1.0e-3
+learning_rate_final = 5.0e-7
+batch_mode = "full"
+epochs = 50000
+checkpoint_interval_epochs = 50000
+progress_interval_epochs = 5000
+output_scaling = "per-output-training-minmax-to-minus1-plus1"
+initializations_per_dataset = 1
+deterministic_algorithms = true
+validation_interval_epochs = 100
+validation_patience = "infinite"
+validation_selection_metric = "mean-mse-in-training-output-scale"
+validation_min_delta = 0.0
+
+[plot]
+methods = ["CS", "DNN"]
+standard_deviation_ddof = 1
+width_inches = 16.0
+height_inches = 9.0
+dpi = 200
+output = "figures/figure1/figure1_learning_curves_rqmc_q23.pdf"

@@ -1,0 +1,28 @@
+name: cloud-column-study-derecho
+
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - nodefaults
+
+dependencies:
+  - python=3.11
+  - pip=26.0
+  - numpy=2.4.3
+  - scipy=1.17.1
+  - matplotlib-base=3.10.8
+  - scikit-learn=1.8.0
+  - threadpoolctl>=3.6
+  - xarray>=2025.1
+  - h5py>=3.12
+  - h5netcdf>=1.4
+  - arviz>=0.22
+  - pytorch=2.5.1
+  - pytorch-cuda=12.1
+  - pytest=9.1
+  - pip:
+      - emcee==3.1.6
+      - qmcpy==2.3
+      - Tasmanian==8.1
+      - cupy-cuda12x==14.1.1

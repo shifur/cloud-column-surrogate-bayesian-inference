@@ -1,0 +1,14 @@
+# Draft only. Copy to CITATION.cff after author confirmation.
+cff-version: 1.2.0
+message: "Cite the frozen software record once the citation is finalized."
+title: "Sparse Polynomial and Neural Network Surrogates for Bayesian Cloud Microphysics Inference — analysis software"
+type: software
+authors:
+  - family-names: "AUTHOR DECISION REQUIRED"
+    given-names: "AUTHOR DECISION REQUIRED"
+    # ORCID: AUTHOR DECISION REQUIRED
+# Software archive creator order and additional authors: AUTHOR DECISION REQUIRED
+# Version: AUTHOR DECISION REQUIRED
+# DOI: NOT YET ASSIGNED
+# Release date: AUTHOR DECISION REQUIRED
+repository-code: "https://github.com/shifur/cloud-column-surrogate-bayesian-inference"

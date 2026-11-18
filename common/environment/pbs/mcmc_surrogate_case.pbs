@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#PBS -N cloud_surrogates
+#PBS -l select=1:ncpus=16:ngpus=1
+#PBS -l walltime=12:00:00
+#PBS -j oe
+
+set -euo pipefail
+: "${CASE:?set CASE to radiation_only or full_except_acc}"
+cd "${PBS_O_WORKDIR}"
+conda run --no-capture-output -n cloud-column-study-derecho \
+  python -u scripts/run_mcmc_surrogates.py --config "${CONFIG:-configs/mcmc.toml}" \
+  --case "${CASE}" --target-burn-in 30000 --target-production 300000 \
+  --progress-every 1000

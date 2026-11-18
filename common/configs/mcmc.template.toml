@@ -1,0 +1,253 @@
+schema_version = 1
+status = "production-template-unmaterialized"
+experiment_id = "cloud_column_mcmc_production_v1"
+description = "Matched SCCM, DNN, and CS posterior comparison"
+
+[study]
+role = "production-study"
+final_manuscript_evidence = true
+candidate_policy = "separate best corrected-RQMC error at m=5000 for DNN and CS among 20 Figure 1 trials"
+candidate_score_outputs = ["PCP", "LWP", "IWP", "OLR", "OSR"]
+candidate_score = "geometric-mean-relative-l2"
+optimized_gpu_30k_300k = true
+
+[parameters]
+source = "parameter_box.toml"
+expected_order = ["as", "bs", "ag", "bg", "N0r", "N0s", "N0g", "rhos", "rhog", "qc0", "qi0"]
+prior = "independent-uniform"
+reject_out_of_box_before_evaluation = true
+
+[synthetic_truth]
+values = [200.0, 0.3, 400.0, 0.4, 0.5, 0.5, 0.5, 0.2, 0.4, 1.0e-3, 6.0e-4]
+
+[observations]
+source = "sccm-synthetic-truth"
+time_minutes = 120
+names = ["PCP", "ACC", "LWP", "IWP", "OLR", "OSR"]
+units = ["mm h^-1", "mm", "kg m^-2", "kg m^-2", "W m^-2", "W m^-2"]
+artifact = "data/mcmc/production/synthetic_observation_t120.npz"
+manifest = "data/mcmc/production/synthetic_observation_t120.manifest.json"
+artifact_sha256 = "SET_OBSERVATION_SHA256"
+
+[observations.error]
+kind = "independent-gaussian"
+entries_are = "standard-deviations"
+sigma = [2.0, 5.0, 0.5, 1.0, 5.0, 5.0]
+covariance_construction = "diag(sigma**2)"
+allow_implicit_jitter = false
+
+[[likelihood_cases]]
+id = "radiation_only"
+mask = [0, 0, 0, 0, 1, 1]
+active_outputs = ["OLR", "OSR"]
+
+[[likelihood_cases]]
+id = "full_except_acc"
+mask = [1, 0, 1, 1, 1, 1]
+active_outputs = ["PCP", "LWP", "IWP", "OLR", "OSR"]
+
+[sampler]
+implementation = "emcee.EnsembleSampler"
+move = "emcee.moves.WeightedMixture"
+coordinate_system = "box-logit"
+walkers_per_ensemble = 32
+burn_in_steps = 30000
+production_steps = 300000
+discard_burn_in = true
+reset_before_production = true
+thinning = 1
+thinning_policy = "none"
+
+[[sampler.move_parameters.components]]
+name = "emcee.moves.DEMove"
+parameters = {}
+weight = 0.8
+
+[[sampler.move_parameters.components]]
+name = "emcee.moves.DESnookerMove"
+parameters = {}
+weight = 0.2
+
+[sampler.initialization]
+law = "latin-hypercube-prior"
+purpose = "dispersed-mode-discovery"
+scales = [20.0, 0.05, 20.0, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 1.0e-4, 1.0e-5]
+out_of_bounds_policy = "redraw-invalid-components"
+maximum_redraw_rounds = 100000
+
+[sampler.ensemble_counts]
+sccm = 2
+dnn = 2
+pdr = 2
+
+[sampler.seeds]
+schedule = "explicit-by-method-v2"
+
+[sampler.seeds.sccm]
+initialization = [1234001, 1234002]
+proposal = [1235001, 1235002]
+initial_position_sha256 = ["f3d462a39aac3ba7035818f5e3e349ceb6ffb0d502d1d858fff72b72e36efd56", "098e63ea592fec1ca0d94b99ebff321ff2a52b44f1718dc7feaac84a0631b6b0"]
+
+[sampler.seeds.dnn]
+initialization = [1234001, 1234002]
+proposal = [1235001, 1235002]
+initial_position_sha256 = ["f3d462a39aac3ba7035818f5e3e349ceb6ffb0d502d1d858fff72b72e36efd56", "098e63ea592fec1ca0d94b99ebff321ff2a52b44f1718dc7feaac84a0631b6b0"]
+
+[sampler.seeds.pdr]
+initialization = [1234001, 1234002]
+proposal = [1235001, 1235002]
+initial_position_sha256 = ["f3d462a39aac3ba7035818f5e3e349ceb6ffb0d502d1d858fff72b72e36efd56", "098e63ea592fec1ca0d94b99ebff321ff2a52b44f1718dc7feaac84a0631b6b0"]
+
+[diagnostics]
+formal_methods = ["sccm", "dnn", "pdr"]
+reference_method_exempt = "none"
+reference_method_required_checks = ["rank_normalized_rhat", "folded_rhat", "bulk_ess", "tail_ess", "acceptance_fraction", "traces", "autocorrelation", "stability", "boundary_occupancy", "mode_occupancy", "artifact_completeness"]
+independent_sampling_unit = "independently-initialized-emcee-ensemble-for-all-methods"
+independent_ensemble_count = 2
+forbid_walkers_as_independent_chains = true
+array_construction = "arrays=(independent_ensemble,transition,walker,parameter); for each fixed walker label and parameter, chain axis contains the two independently-initialized ensembles and draw axis contains transitions; walkers are never flattened or promoted to chains; report maximum R-hat and minimum ESS across matched-walker marginal trajectories"
+two_ensemble_limitation = "R-hat is mathematically computable from two independent scalar chains but has weak between-run power; interacting walkers must not populate the chain dimension"
+rank_normalized_rhat = true
+folded_rhat = true
+rhat_final = "max(rank_normalized_rhat, folded_rhat)"
+rhat_threshold_strictly_less_than = 1.01
+bulk_ess = true
+marginal_diagnostic_policy = "compute-rank-and-folded-rhat-and-bulk-tail-ess-for-each-fixed-walker-trajectory-across-two-independent-ensembles"
+walker_aggregation = "maximum-rhat-and-minimum-ess-across-32-matched-walker-trajectories"
+bulk_ess_estimator = "minimum-arviz-rank-normalized-bulk-ess-across-matched-walker-trajectories"
+bulk_ess_threshold = 400
+tail_ess = true
+tail_probability_levels = [0.05, 0.95]
+tail_ess_estimator = "minimum-across-walkers-of-arviz-quantile-ess-at-probabilities-0.05-and-0.95"
+tail_ess_threshold = 400
+report_cross_walker_dependence = true
+cross_walker_dependence_statistic = "mean-and-maximum-absolute-off-diagonal-walker-time-series-correlation"
+cross_walker_dependence_is_pass_fail = false
+acceptance_fraction = true
+traces = true
+autocorrelation = true
+boundary_occupancy = true
+mode_occupancy = true
+mode_occupancy_method = "pooled-quantile-decile-bin-occupancy-by-independent-ensemble"
+maximum_mode_occupancy_difference = 0.10
+between_ensemble_agreement = true
+explicit_pass_fail = true
+
+[sampler.checkpointing]
+backend = "atomic-npz-blocks"
+checkpoint_schema_version = 3
+block_transitions = 1000
+diagnostic_prefixes = [10000, 20000, 50000, 100000, 150000, 200000, 250000, 300000]
+partial_block_policy = "discard-uncommitted-block-and-resume-last-atomic-state"
+preserve_rng_state = true
+preserve_timing = true
+timing_policy = "sum-checksum-committed-active-blocks; record-session-setup-and-checkpoint-io-separately; record-caught-partial-block-time-as-measured-interruption-overhead; record-uncaught-hard-loss-time-only-as-an-upper-bound; exclude-all-uncommitted-work-from-productive-throughput"
+
+[prediction_cache]
+policy = "method-aware-retained-production-only"
+burn_in_predictions = "never"
+retained_state_alignment = "transition-walker-output"
+dtype = "float64"
+output_order = ["PCP", "ACC", "LWP", "IWP", "OLR", "OSR"]
+restart_policy = "resume-from-last-checksum-valid-atomic-block; discard-only-uncommitted-partial-block; skip-checksum-valid-complete-units"
+
+[prediction_cache.sccm]
+store = true
+coverage = "all-retained-production-states"
+shape_per_chain = [300000, 32, 6]
+sample_count_per_likelihood_case = 19200000
+
+[prediction_cache.dnn]
+store = false
+recompute_from_frozen_model = true
+require_model_hash_verification = true
+
+[prediction_cache.pdr]
+store = false
+recompute_from_frozen_model = true
+require_model_hash_and_basis_verification = true
+
+[surrogates]
+training_policy = "prospective-best-corrected-rqmc-error-at-m5000"
+training_configuration = "figure1.toml"
+training_data_policy = "method-specific-selected-trial-recorded-in-each-surrogate-section"
+
+[surrogates.dnn]
+model = "SET_DNN_MODEL_PATH"
+model_sha256 = "SET_DNN_MODEL_SHA256"
+fit_manifest = "SET_DNN_FIT_MANIFEST_PATH"
+training_data = "SET_DNN_TRAINING_DATA_PATH"
+training_data_sha256 = "SET_DNN_TRAINING_DATA_SHA256"
+
+[surrogates.pdr]
+model = "SET_CS_MODEL_PATH"
+model_sha256 = "SET_CS_MODEL_SHA256"
+fit_manifest = "SET_CS_FIT_MANIFEST_PATH"
+training_data = "SET_CS_TRAINING_DATA_PATH"
+training_data_sha256 = "SET_CS_TRAINING_DATA_SHA256"
+q = 23
+basis_size = 7569
+basis_fingerprint_sha256 = "a22d9594d73d3b779dc08d87dc34470ef8d2a5fcb2c60e786acc8429c3eed76f"
+
+[artifacts]
+root = "outputs/mcmc/production_v1/chains"
+one_chain_file_per_method_case_ensemble = true
+chain_format = "netcdf4-hdf5"
+chain_backend = "h5netcdf"
+manifest_schema_version = 2
+atomic_finalization = true
+store_complete_unthinned_parameters = true
+store_all_forward_predictions = false
+expected_likelihood_case_count = 2
+expected_method_count = 3
+expected_ensemble_counts_by_method = { sccm = 2, dnn = 2, pdr = 2 }
+expected_chain_file_count = 12
+
+[artifacts.storage_estimate]
+retained_states_per_ensemble = 12800000
+uncompressed_bytes_per_ensemble = 1459200000
+uncompressed_gib_per_ensemble = 1.3589859008789062
+uncompressed_bytes_all_chains = 17510400000
+uncompressed_gib_all_chains = 16.306781768798828
+uncompressed_bytes_four_sccm_chains = 5836800000
+uncompressed_gib_four_sccm_chains = 5.435943603515625
+planning_budget_gib_excluding_prediction_caches = 24
+compression_note = "NetCDF compression is data-dependent; budget is based on uncompressed core arrays plus metadata/format headroom"
+
+[workload]
+likelihood_case_count = 2
+independent_ensemble_counts_by_method = { sccm = 2, dnn = 2, pdr = 2 }
+steps_per_ensemble_including_burn_in = 330000
+sccm_run_count = 4
+sccm_transition_proposals_total = 42240000
+sccm_initial_state_evaluations_total = 128
+sccm_posterior_evaluations_upper_bound = 42240128
+sccm_forward_evaluations_note = "actual SCCM calls equal successful in-box posterior evaluations and can be lower because prior rejections do not invoke SCCM"
+sccm_throughput_evaluations_per_second = 1.0
+sccm_estimated_wall_seconds = 42240128.0
+sccm_estimated_wall_hours = 11733.688888888889
+sccm_estimated_wall_days = 488.9037037037037
+estimate_scope = "placeholder only; replace using the Derecho timing calibration before resource requests"
+
+[runtime.dnn]
+device = "cuda"
+backend = "torch-compile-cuda"
+dtype = "float32-model/float64-output"
+cpu_fallback_allowed = false
+
+[runtime.pdr]
+device = "cuda"
+backend = "cupy-cached-sparse-cuda"
+dtype = "float64"
+prune_exact_zeros = true
+active_basis_size = "SET_CS_ACTIVE_BASIS_SIZE"
+active_support_sha256 = "SET_CS_ACTIVE_SUPPORT_SHA256"
+cpu_fallback_allowed = false
+
+[runtime.execution]
+dnn_ensemble_concurrency = 1
+pdr_ensemble_concurrency = 2
+dnn_runtime_policy = "one-persistent-compiled-runtime-sequential-ensembles"
+pdr_runtime_policy = "one-persistent-cached-sparse-runtime-paired-ensemble-microbatches"
+microbatch_window_us = 2000.0
+blocks_per_unit_advance = 50
