@@ -10,8 +10,21 @@ the registered SCCM-derived arrays and the archived analysis inputs.
 - RELEASE VERSION: AUTHOR DECISION REQUIRED
 - SOFTWARE LICENSE: AUTHOR DECISION REQUIRED
 - SOFTWARE DOI: NOT YET ASSIGNED
-- DATA DOI: NOT YET ASSIGNED
-- DATA REPOSITORY DOI: NOT YET ASSIGNED
+- DATA DOI: 10.5281/zenodo.24353341 (RESERVED; ZENODO DRAFT UNPUBLISHED)
+- DATA REPOSITORY DOI: 10.5281/zenodo.24353341 (RESERVED; NOT YET ACTIVE/PUBLIC)
+
+## Scientific data
+
+The scientific data supporting this study, including the formal MCMC chains,
+convergence diagnostics, surrogate evaluation data, timing records, the
+synthetic observation, and figure-supporting data, have been prepared in
+Zenodo.
+
+**Reserved Zenodo DOI:** `10.5281/zenodo.24353341`
+
+**Status:** The Zenodo record is currently an unpublished draft. The DOI has
+been reserved but is not yet active/public; it will become active when the
+Zenodo data record is published.
 
 ## Install and run
 
